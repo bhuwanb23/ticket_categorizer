@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto Email / Ticket Categorizer — AI/ML Intern Assessment | Fobes Skill Itech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F5F7FA;
+    --surface: #FFFFFF;
+    --surface-2: #EEF1F6;
+    --ink: #10203D;
+    --ink-soft: #4B5A78;
+    --line: #DCE2ED;
+    --blue: #2C5FDB;
+    --blue-deep: #1C3F99;
+    --teal: #0EA5A0;
+    --amber: #E9A61B;
+    --coral: #E15B5B;
+    --radius: 14px;
+    --shadow: 0 8px 24px rgba(16,32,61,0.08);
+    --shadow-lg: 0 20px 50px rgba(16,32,61,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;
+    border-bottom:1px solid var(--line);
+    background:var(--surface);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg,var(--blue),var(--teal));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:15px;
+    flex-shrink:0;
+  }
+  .brand-name{font-weight:600;font-size:15px;letter-spacing:0.2px;}
+  .brand-sub{font-size:11.5px;color:var(--ink-soft);margin-top:-2px;}
+  .timer-chip{
+    display:flex;align-items:center;gap:8px;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    padding:8px 14px;border-radius:999px;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;
+    color:var(--blue-deep);
+  }
+  .timer-dot{width:7px;height:7px;border-radius:50%;background:var(--coral);animation:pulse 1.4s infinite;}
+  .timer-chip.idle .timer-dot{background:#B7BFCF;animation:none;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+
+  /* ================= LANDING ================= */
+  #screen-landing{padding:64px 0 40px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal);
+    background:rgba(14,165,160,0.08);border:1px solid rgba(14,165,160,0.25);
+    padding:5px 12px;border-radius:999px;margin-bottom:20px;
+  }
+  .hero-title{font-size:clamp(28px,4.4vw,44px);font-weight:700;line-height:1.15;margin:0 0 14px;color:var(--ink);}
+  .hero-title span{color:var(--blue);}
+  .hero-desc{font-size:16.5px;color:var(--ink-soft);max-width:640px;margin:0 0 30px;}
+
+  .meta-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:36px;}
+  .meta-pill{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:12px 16px;display:flex;flex-direction:column;gap:2px;min-width:130px;
+    box-shadow:var(--shadow);
+  }
+  .meta-pill .label{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);}
+  .meta-pill .value{font-weight:600;font-size:14.5px;}
+
+  /* ticket-flow signature animation */
+  .ticket-stage{
+    position:relative;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:26px 22px 22px;margin-bottom:36px;overflow:hidden;
+  }
+  .ticket-stage h3{margin:0 0 4px;font-size:14px;color:var(--ink-soft);font-weight:600;}
+  .stage-track{position:relative;height:96px;margin-top:14px;}
+  .lane-labels{display:flex;justify-content:space-between;position:absolute;bottom:0;left:0;right:0;}
+  .lane{flex:1;text-align:center;}
+  .lane .tag{
+    display:inline-block;font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:7px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .lane:nth-child(1) .tag{background:rgba(44,95,219,0.1);color:var(--blue-deep);}
+  .lane:nth-child(2) .tag{background:rgba(14,165,160,0.1);color:var(--teal);}
+  .lane:nth-child(3) .tag{background:rgba(233,166,27,0.13);color:#8a6408;}
+  .lane:nth-child(4) .tag{background:rgba(225,91,91,0.1);color:#a63333;}
+
+  .ticket-chip{
+    position:absolute;top:0;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:8px;padding:7px 11px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    box-shadow:0 4px 10px rgba(16,32,61,0.10);
+    animation:drop 3.2s ease-in forwards;
+    color:var(--ink-soft);
+  }
+  @keyframes drop{
+    0%{top:0;opacity:0;transform:translateY(0) scale(0.9);}
+    10%{opacity:1;}
+    85%{opacity:1;}
+    100%{top:54px;opacity:0;transform:translateY(0) scale(1);}
+  }
+
+  .btn{
+    appearance:none;border:none;cursor:pointer;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:15px;
+    padding:14px 26px;border-radius:10px;
+    display:inline-flex;align-items:center;gap:10px;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 10px 24px rgba(44,95,219,0.30);}
+  .btn-primary:hover{background:var(--blue-deep);transform:translateY(-1px);}
+  .btn-primary:disabled{background:#B9C4DA;box-shadow:none;cursor:not-allowed;transform:none;}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--blue);color:var(--blue-deep);}
+
+  /* ================= MAIN ASSESSMENT ================= */
+  #screen-main{display:none;padding:40px 0 100px;}
+  .section-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.08em;
+    color:var(--blue-deep);text-transform:uppercase;margin-bottom:8px;display:block;
+  }
+  .section{margin-bottom:52px;}
+  .section h2{font-size:22px;margin:0 0 14px;}
+  .desc-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 28px;box-shadow:var(--shadow);font-size:15.5px;color:var(--ink-soft);
+  }
+  .desc-card b{color:var(--ink);}
+
+  .card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .point-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 20px 18px;box-shadow:var(--shadow);
+  }
+  .point-card .icon{
+    width:32px;height:32px;border-radius:8px;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+    font-size:15px;
+  }
+  .point-card h4{margin:0 0 6px;font-size:15px;}
+  .point-card p{margin:0;font-size:13.8px;color:var(--ink-soft);}
+
+  .bonus-card{
+    background:linear-gradient(180deg,#FFFDF6,#FFFFFF);
+    border:1px solid #F0DFA8;border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);
+    display:flex;gap:14px;align-items:flex-start;
+  }
+  .bonus-card + .bonus-card{margin-top:12px;}
+  .bonus-badge{
+    flex-shrink:0;background:var(--amber);color:#fff;font-size:10.5px;font-weight:700;
+    padding:4px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;
+  }
+  .bonus-card h4{margin:0 0 4px;font-size:14.5px;}
+  .bonus-card p{margin:0;font-size:13.6px;color:var(--ink-soft);}
+
+  .categories-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .cat-chip{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+    border:1px solid var(--line);background:var(--surface);
+    padding:6px 12px;border-radius:8px;color:var(--ink-soft);
+  }
+
+  /* ---------- submission ---------- */
+  .submit-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:28px;box-shadow:var(--shadow-lg);
+  }
+  .field-label{font-size:13px;font-weight:600;margin-bottom:8px;display:block;}
+  .field-hint{font-size:12.5px;color:var(--ink-soft);margin:-4px 0 10px;}
+  textarea, input[type=text]{
+    width:100%;border:1px solid var(--line);border-radius:9px;
+    padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);
+    background:var(--surface-2);resize:vertical;
+  }
+  textarea:focus, input[type=text]:focus{outline:2px solid var(--blue);outline-offset:1px;background:#fff;}
+  .drop-zone{
+    border:1.5px dashed var(--line);border-radius:10px;padding:22px;text-align:center;
+    color:var(--ink-soft);font-size:13.5px;margin-top:8px;background:var(--surface-2);
+  }
+  .drop-zone b{color:var(--blue-deep);}
+  .submit-footer{display:flex;justify-content:space-between;align-items:center;margin-top:22px;flex-wrap:wrap;gap:14px;}
+  .note{font-size:12.5px;color:var(--ink-soft);}
+
+  /* ---------- confirmation ---------- */
+  #screen-confirm{display:none;padding:90px 0;text-align:center;}
+  .check-circle{
+    width:74px;height:74px;border-radius:50%;background:rgba(14,165,160,0.12);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 24px;
+  }
+  .check-circle svg{width:34px;height:34px;}
+  #screen-confirm h2{font-size:26px;margin:0 0 10px;}
+  #screen-confirm p{color:var(--ink-soft);font-size:15px;max-width:440px;margin:0 auto 26px;}
+  .ref-box{
+    display:inline-block;background:var(--surface);border:1px solid var(--line);
+    border-radius:9px;padding:12px 20px;font-family:'IBM Plex Mono',monospace;font-size:13px;
+    color:var(--blue-deep);box-shadow:var(--shadow);
+  }
+
+  footer.brandfoot{text-align:center;padding:26px 20px;color:var(--ink-soft);font-size:12px;border-top:1px solid var(--line);margin-top:20px;}
+
+  @media (max-width:700px){
+    .card-grid{grid-template-columns:1fr;}
+    .topbar{padding:14px 18px;}
+    #screen-landing{padding:40px 0 24px;}
+    .stage-track{height:110px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticket-chip{animation:none;opacity:1;}
+    .timer-dot{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">FS</div>
+    <div>
+      <div class="brand-name">Fobes Skill Itech Pvt Ltd</div>
+      <div class="brand-sub">Technical Assessment Portal</div>
+    </div>
+  </div>
+  <div class="timer-chip idle" id="timerChip">
+    <span class="timer-dot"></span>
+    <span id="timerText">60:00</span>
+  </div>
+</div>
+
+<!-- ================= LANDING ================= -->
+<div id="screen-landing">
+  <div class="wrap">
+    <span class="eyebrow">● AI / ML INTERN ASSESSMENT</span>
+    <h1 class="hero-title">Auto Email / Ticket <span>Categorizer</span></h1>
+    <p class="hero-desc">Build a lightweight NLP classifier that reads an incoming support ticket and routes it to the correct department — automatically, and in real time. This mirrors the triage layer used inside real enterprise helpdesk systems.</p>
+
+    <div class="meta-row">
+      <div class="meta-pill"><span class="label">Duration</span><span class="value">60 minutes</span></div>
+      <div class="meta-pill"><span class="label">Level</span><span class="value">Beginner–Intermediate</span></div>
+      <div class="meta-pill"><span class="label">Stack</span><span class="value">Python · sklearn</span></div>
+      <div class="meta-pill"><span class="label">Mode</span><span class="value">Individual</span></div>
+    </div>
+
+    <div class="ticket-stage">
+      <h3>Live routing preview</h3>
+      <div class="stage-track" id="stageTrack">
+        <!-- chips injected by JS -->
+      </div>
+      <div class="lane-labels">
+        <div class="lane"><span class="tag">BILLING</span></div>
+        <div class="lane"><span class="tag">TECHNICAL</span></div>
+        <div class="lane"><span class="tag">HR</span></div>
+        <div class="lane"><span class="tag">GENERAL</span></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="startBtn">▶ Start Assessment</button>
+  </div>
+</div>
+
+<!-- ================= MAIN ================= -->
+<div id="screen-main">
+  <div class="wrap">
+
+    <div class="section">
+      <span class="section-tag">Description</span>
+      <h2>What you're building</h2>
+      <div class="desc-card">
+        <p style="margin-top:0">You'll receive a small labeled dataset of support tickets/emails (subject + body text), each already tagged with a category — <b>Billing, Technical, HR,</b> or <b>General</b>. Your job is to build a model that reads new, unseen ticket text and predicts its category automatically.</p>
+        <p>Load and clean the text data → convert it into numerical features (TF-IDF or simple keyword vectors) → train a classifier (Naive Bayes or Logistic Regression) → evaluate accuracy → predict the category for at least 5 new sample tickets you write yourself.</p>
+        <p style="margin-bottom:0">Treat this as a real internal tool: assume it will sit in front of a live ticket queue and needs to make a fast, defensible decision on every incoming message.</p>
+      </div>
+      <div class="categories-row">
+        <span class="cat-chip">#billing</span>
+        <span class="cat-chip">#technical</span>
+        <span class="cat-chip">#hr</span>
+        <span class="cat-chip">#general</span>
+        <span class="cat-chip">#tfidf</span>
+        <span class="cat-chip">#naive-bayes</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-tag">Project Understanding</span>
+      <h2>What this evaluates</h2>
+      <div class="card-grid">
+        <div class="point-card">
+          <div class="icon">🧹</div>
+          <h4>Text preprocessing</h4>
+          <p>Can they clean raw ticket text — lowercase, remove noise/stopwords — before modeling?</p>
+        </div>
+        <div class="point-card">
+          <div class="icon">🔢</div>
+          <h4>Feature representation</h4>
+          <p>Do they understand why text needs vectorizing (TF-IDF/Bag-of-Words) before it reaches a model?</p>
+        </div>
+        <div class="point-card">
+          <div class="icon">🎯</div>
+          <h4>Model choice reasoning</h4>
+          <p>Can they justify Naive Bayes/Logistic Regression for text classification, not just import it?</p>
+        </div>
+        <div class="point-card">
+          <div class="icon">📊</div>
+          <h4>Evaluation literacy</h4>
+          <p>Do they read accuracy, precision/recall, and a confusion matrix — and know what each implies?</p>
+        </div>
+        <div class="point-card">
+          <div class="icon">⚡</div>
+          <h4>Real-time usability</h4>
+          <p>Can the trained model classify one new incoming ticket on demand, not just a static test set?</p>
+        </div>
+        <div class="point-card">
+          <div class="icon">🧩</div>
+          <h4>Edge-case handling</h4>
+          <p>What happens with a ticket that doesn't clearly fit any category — do they have a fallback?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-tag">Extra Assessment Build-Ups</span>
+      <h2>Bonus objectives</h2>
+
+      <div class="bonus-card">
+        <span class="bonus-badge">BONUS</span>
+        <div><h4>Confidence score output</h4><p>Return a probability/confidence % alongside the predicted category, not just the label — mirrors how real triage tools flag low-confidence tickets for human review.</p></div>
+      </div>
+      <div class="bonus-card">
+        <span class="bonus-badge">BONUS</span>
+        <div><h4>"Needs human review" threshold</h4><p>If confidence falls below ~60%, route the ticket to a manual-review queue instead of auto-assigning it.</p></div>
+      </div>
+      <div class="bonus-card">
+        <span class="bonus-badge">BONUS</span>
+        <div><h4>Priority tagging</h4><p>Layer in a simple urgent/normal tag using keyword rules (e.g. "down", "urgent", "not working") alongside the category.</p></div>
+      </div>
+      <div class="bonus-card">
+        <span class="bonus-badge">BONUS</span>
+        <div><h4>Mini live demo (CLI or Streamlit)</h4><p>A simple input box where a new ticket can be typed in and categorized instantly — turns the script into a usable tool.</p></div>
+      </div>
+      <div class="bonus-card">
+        <span class="bonus-badge">BONUS</span>
+        <div><h4>Reflection note (3–5 lines)</h4><p>"What would you improve with more data or time?" — tests critical thinking beyond just working code.</p></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-tag">Submission</span>
+      <h2>Submit your work</h2>
+      <div class="submit-card">
+        <label class="field-label" for="repoLink">GitHub / Colab / file link</label>
+        <div class="field-hint">Paste a link to your notebook, repo, or shared code file.</div>
+        <input type="text" id="repoLink" placeholder="https://github.com/your-username/ticket-categorizer">
+
+        <div style="height:18px"></div>
+
+        <label class="field-label" for="approach">Approach summary (2–4 lines)</label>
+        <div class="field-hint">Briefly describe your model choice and how you handled edge cases.</div>
+        <textarea id="approach" rows="4" placeholder="e.g. Used TF-IDF + Multinomial Naive Bayes, added a confidence threshold for low-certainty tickets..."></textarea>
+
+        <div class="drop-zone">📎 Drag & drop your notebook/script here, or attach via the link above — <b>upload not required if a link is provided</b></div>
+
+        <div class="submit-footer">
+          <span class="note" id="validationNote">Add a link or notes to enable submission.</span>
+          <button class="btn btn-primary" id="submitBtn" disabled>✓ Submit Assessment</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= CONFIRMATION ================= -->
+<div id="screen-confirm">
+  <div class="wrap">
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2>Assessment submitted</h2>
+    <p>Your Auto Email / Ticket Categorizer submission has been recorded. The Fobes Skill Itech hiring team will review it and follow up on next steps.</p>
+    <div class="ref-box" id="refBox">REF-000000</div>
+  </div>
+</div>
+
+<footer class="brandfoot">Fobes Skill Itech Pvt Ltd — AI/ML Internship Program · Technical Assessment</footer>
+
+<script>
+  // ---- ticket flow animation ----
+  const stage = document.getElementById('stageTrack');
+  const samples = [
+    {t:'TCK-2291 · "invoice not received"', lane:0},
+    {t:'TCK-2292 · "app crashes on login"', lane:1},
+    {t:'TCK-2293 · "leave balance query"', lane:2},
+    {t:'TCK-2294 · "general product question"', lane:3},
+    {t:'TCK-2295 · "refund delayed"', lane:0},
+    {t:'TCK-2296 · "API returns 500 error"', lane:1},
+  ];
+  let si = 0;
+  function spawnChip(){
+    const s = samples[si % samples.length]; si++;
+    const chip = document.createElement('div');
+    chip.className = 'ticket-chip';
+    chip.textContent = s.t;
+    const laneWidth = stage.clientWidth / 4;
+    chip.style.left = (laneWidth * s.lane + 8) + 'px';
+    stage.appendChild(chip);
+    setTimeout(()=>chip.remove(), 3300);
+  }
+  let spawnInterval = setInterval(spawnChip, 1100);
+  spawnChip();
+
+  // ---- start button / timer ----
+  const startBtn = document.getElementById('startBtn');
+  const screenLanding = document.getElementById('screen-landing');
+  const screenMain = document.getElementById('screen-main');
+  const timerChip = document.getElementById('timerChip');
+  const timerText = document.getElementById('timerText');
+  let seconds = 60*60 <= 0 ? 3600 : 3600; // 60:00
+  let totalSeconds = 60*60/60; // 60 minutes -> use 60*60 seconds actually
+  totalSeconds = 60*60; // 3600 seconds = 60 min
+  let remaining = totalSeconds;
+  let tickInterval = null;
+
+  function formatTime(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = Math.floor(s%60).toString().padStart(2,'0');
+    return m + ':' + sec;
+  }
+
+  startBtn.addEventListener('click', () => {
+    screenLanding.style.display = 'none';
+    screenMain.style.display = 'block';
+    timerChip.classList.remove('idle');
+    window.scrollTo({top:0, behavior:'instant'});
+    tickInterval = setInterval(() => {
+      remaining--;
+      if(remaining <= 0){
+        remaining = 0;
+        clearInterval(tickInterval);
+      }
+      timerText.textContent = formatTime(remaining);
+    }, 1000);
+  });
+
+  // ---- submission validation ----
+  const repoLink = document.getElementById('repoLink');
+  const approach = document.getElementById('approach');
+  const submitBtn = document.getElementById('submitBtn');
+  const validationNote = document.getElementById('validationNote');
+
+  function checkValid(){
+    const valid = repoLink.value.trim().length > 4 || approach.value.trim().length > 10;
+    submitBtn.disabled = !valid;
+    validationNote.textContent = valid ? 'Ready to submit.' : 'Add a link or notes to enable submission.';
+  }
+  repoLink.addEventListener('input', checkValid);
+  approach.addEventListener('input', checkValid);
+
+  submitBtn.addEventListener('click', () => {
+    clearInterval(tickInterval);
+    clearInterval(spawnInterval);
+    document.getElementById('screen-main').style.display = 'none';
+    document.getElementById('screen-confirm').style.display = 'block';
+    const ref = 'FS-AIML-' + Math.floor(100000 + Math.random()*900000);
+    document.getElementById('refBox').textContent = ref;
+    window.scrollTo({top:0, behavior:'instant'});
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+subject,body,label
+Invoice not received,"I did not receive my invoice for order #1001. Please send.",Billing
+Refund delayed,"My refund for order 889 is delayed. When will it be processed?",Billing
+Charge on wrong card,"I was charged on the wrong card. Please correct the payment.",Billing
+Billing discrepancy,"There is an extra charge for subscription I did not authorize.",Billing
+Request invoice copy,"Can you resend the invoice for March?",Billing
+Payment failed,"My payment failed but money was debited. Please advise.",Billing
+Double charged,"I was billed twice for the same invoice this month.",Billing
+Subscription cancel refund,"I cancelled my plan but still see a billing charge.",Billing
+App crashes on login,"The mobile app crashes every time I try to login.",Technical
+API returns 500,"Our integration returns a 500 error at /api/v1/login",Technical
+Features missing,"The new update removed essential features I need.",Technical
+Cannot upload file,"I cannot upload attachments to the ticket portal.",Technical
+Slow performance,"The dashboard is very slow and times out.",Technical
+Error on checkout,"Checkout fails with unknown error code 42.",Technical
+Production outage,"Production is down and the service is not working.",Technical
+Password reset help,"I cannot login and need a password reset.",Technical
+Leave balance question,"How many leave days do I have remaining?",HR
+Salary slip missing,"I did not receive my salary slip for June.",HR
+Request maternity leave,"I want to apply for maternity leave from next month.",HR
+Update personal details,"How do I change my bank account details?",HR
+Benefits eligibility,"Am I eligible for health benefits as a contractor?",HR
+Policy clarification,"Can you clarify the travel reimbursement policy?",HR
+HR onboarding docs,"Where can I find my onboarding and employee handbook?",HR
+Timesheet correction,"Please correct my timesheet hours for last week.",HR
+General product question,"What is the difference between plans A and B?",General
+Account setup help,"How do I set up my account for the first time?",General
+Feature suggestion,"I have a suggestion for improving the search function.",General
+Office hours,"What are your support office hours?",General
+Partnership inquiry,"We'd like to discuss a potential partnership.",General
+Other feedback,"General feedback about the user experience.",General
+Product demo request,"Can someone walk me through a product demo?",General
+Contact support,"I have a general question and need to contact support.",General
