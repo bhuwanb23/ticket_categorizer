@@ -117,3 +117,12 @@ With more real helpdesk data I would expand coverage of ambiguous General vs Tec
 
 - Python 3.9+
 - `scikit-learn`, `pandas`, `joblib` (see `requirements.txt`)
+
+## PDF handout
+
+A formatted submission PDF is included as [`Auto_Email_Ticket_Categorizer.pdf`](Auto_Email_Ticket_Categorizer.pdf). Regenerate it with:
+
+```bash
+venv\Scripts\python.exe -m pip install fpdf2
+venv\Scripts\python.exe generate_readme_pdf.py
+```
