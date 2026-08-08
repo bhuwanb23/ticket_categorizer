@@ -48,6 +48,20 @@ venv/bin/python src/predict.py --interactive
 
 ---
 
+## Insights & outcomes
+
+**Dataset:** 32 labeled tickets (8 each: Billing, Technical, HR, General).
+
+**How:** Clean subject+body → TF‑IDF (1–2 grams) → Logistic Regression → stratified holdout eval → retrain on all data → `predict_ticket()` + CLI.
+
+**Holdout:** ~62.5% accuracy on 8 test tickets. Billing separates cleanly; most confusion is General ↔ HR (similar polite / policy language).
+
+**Demo (5 new tickets):** correct labels on all five; 4 auto-assigned (confidence ≥ ~60%); “Refund status” flagged for human review at 52% confidence. Priority keywords (`asap`, `urgent`, `down`, …) tag urgency without changing the category.
+
+**Takeaway:** Linear TF‑IDF models are enough for short tickets. Confidence thresholding is the safety net for edge cases; more real ambiguous tickets would improve General/HR/Technical boundaries most.
+
+---
+
 ## Project layout
 
 ```
