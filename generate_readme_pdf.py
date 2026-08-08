@@ -5,6 +5,8 @@ from fpdf import FPDF
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "Auto_Email_Ticket_Categorizer.pdf"
+REPO_URL = "https://github.com/Padmanaban29072004/ticket_categorizer"
+REPO_NAME = "Padmanaban29072004/ticket_categorizer"
 
 BLUE = (44, 95, 219)
 BLUE_DEEP = (28, 63, 153)
@@ -196,7 +198,28 @@ def build():
     pdf.set_font("Sans", "B", 22)
     pdf.set_text_color(*INK)
     pdf.multi_cell(0, 9, "Auto Email / Ticket Categorizer")
-    pdf.ln(2)
+    pdf.ln(1)
+
+    # Repository link box
+    repo_y = pdf.get_y()
+    pdf.set_fill_color(*SURFACE)
+    pdf.set_draw_color(*TEAL)
+    pdf.set_line_width(0.6)
+    pdf.rect(18, repo_y, pdf.w - 36, 16, style="DF")
+    pdf.set_xy(22, repo_y + 2)
+    pdf.set_font("Sans", "", 7.5)
+    pdf.set_text_color(*INK_SOFT)
+    pdf.cell(0, 4, "GITHUB REPOSITORY")
+    pdf.set_xy(22, repo_y + 6.5)
+    pdf.set_font("Sans", "B", 10)
+    pdf.set_text_color(*BLUE_DEEP)
+    pdf.cell(0, 4.5, REPO_NAME, link=REPO_URL)
+    pdf.set_xy(22, repo_y + 11)
+    pdf.set_font("Sans", "", 8)
+    pdf.set_text_color(*BLUE)
+    pdf.cell(0, 3.5, REPO_URL, link=REPO_URL)
+    pdf.set_y(repo_y + 20)
+
     pdf.set_font("Sans", "", 10.5)
     pdf.set_text_color(*INK_SOFT)
     pdf.multi_cell(
@@ -368,6 +391,7 @@ Body   : Service is down and not working — urgent
         0,
         4.5,
         "Fobes Skill Itech Pvt Ltd — AI/ML Internship Program · Technical Assessment\n"
+        f"Repository: {REPO_URL}\n"
         "Document generated from project README.",
     )
 

@@ -2,6 +2,8 @@
 
 Fobes Skill Itech — AI/ML Intern Assessment
 
+**Repository:** [https://github.com/Padmanaban29072004/ticket_categorizer](https://github.com/Padmanaban29072004/ticket_categorizer)
+
 Lightweight NLP classifier that reads an incoming support ticket (subject + body) and routes it to **Billing**, **Technical**, **HR**, or **General** — with confidence scores, a human-review threshold, and simple priority tagging.
 
 ---
